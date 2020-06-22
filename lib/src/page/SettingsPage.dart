@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:preferencias_git/src/preferents/preferencia.dart';
 import 'package:preferencias_git/src/wigdget/menuWidget.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+
 class SettingsPage extends StatefulWidget 
 {
 
@@ -12,20 +13,23 @@ class SettingsPage extends StatefulWidget
 
 }
 class _SettingsPageState extends State<SettingsPage> {
-  bool _colorSecundario = false;
-  int _genero = 1;
+  bool _colorSecundario;
+  int _genero;
   String _nombre = 'kervis';
 
   TextEditingController _textController ;
+  final prefs = new PreferenciasUsuario();
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    _textController  = new TextEditingController(text: _nombre);
-    cargarPref();
+    _textController  = new TextEditingController(text: prefs.nombreUsuario);
+    _genero = prefs.genero;
+    _colorSecundario = prefs.colorSecundario;
+    prefs.ultimaPagina =SettingsPage.routeName; 
   }
 
-
+/*
   cargarPref() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     _genero = prefs.getInt('genero');
@@ -33,14 +37,15 @@ class _SettingsPageState extends State<SettingsPage> {
       
     });
   }
+*/
 
 
-
-  _setSelecteRadio(int valor ) async
+  _setSelecteRadio(int valor ) 
   {
 
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setInt('genero', valor);
+
+     //prefs.setInt('genero', valor);
+    prefs.genero = valor;
     _genero = valor;
     setState(() {
       
@@ -50,7 +55,8 @@ class _SettingsPageState extends State<SettingsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Ajustes')
+        title: Text('Ajustes'),
+        backgroundColor: (prefs.colorSecundario) ? Colors.teal : Colors.blue ,
       ),
       drawer: Menu(),
       
@@ -71,6 +77,7 @@ class _SettingsPageState extends State<SettingsPage> {
                   
                   setState(() {
                     _colorSecundario = value;
+                    prefs.colorSecundario = value;
                   });
                 },
             ),
@@ -96,7 +103,7 @@ class _SettingsPageState extends State<SettingsPage> {
                   helperText: 'Nombre de la persona usado'                  
                 ),
                 onChanged: (value){
-
+                    prefs.nombreUsuario = value;
                 },
               ) ,
             )
